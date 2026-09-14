@@ -69,21 +69,43 @@ export default function App() {
           onKeyDown={e => e.key === 'Enter' && addTodo()}
           placeholder="Что нужно сделать?"
         />
-        <button onClick={addTodo}>Добавить</button>
+        <button className="btn-liquid" onClick={addTodo}>
+          <div className="liquid"></div>
+          <span className="btn-txt">Добавить</span>
+        </button>
       </div>
 
       <ul className="list">
         {todos.map(todo => (
-          <li key={todo.id} className={todo.done ? 'done' : ''}>
-            <input
-              type="checkbox"
-              checked={todo.done}
-              onChange={() => toggleTodo(todo.id)}
-            />
-            <span onClick={() => toggleTodo(todo.id)}>{todo.text}</span>
-            <button onClick={() => removeTodo(todo.id)}>×</button>
-          </li>
-        ))}
+  <li key={todo.id} className={todo.done ? 'done' : ''}>
+    <div className="checkbox-wrapper">
+      <input
+        type="checkbox"
+        className="check"
+        id={`todo-${todo.id}`}
+        checked={todo.done}
+        onChange={() => toggleTodo(todo.id)}
+      />
+      <label htmlFor={`todo-${todo.id}`} className="label">
+        <svg width="22" height="22" viewBox="0 0 18 18">
+          <g
+            fill="none"
+            stroke="#2893eb"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path className="path1" d="M2 9.5 L7 14 L16 4" />
+          </g>
+        </svg>
+      </label>
+    </div>
+
+    <span onClick={() => toggleTodo(todo.id)}>{todo.text}</span>
+    <button onClick={() => removeTodo(todo.id)}>×</button>
+  </li>
+))}
+      
       </ul>
 
       {todos.length > 0 && (
