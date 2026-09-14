@@ -1,9 +1,5 @@
-import { useEffect, useState } from 'react'
-import {
-  collection, addDoc, deleteDoc, updateDoc,
-  doc, onSnapshot, query, orderBy
-} from 'firebase/firestore'
-import { db } from './firebase'
+import { useEffect, useState, useCallback } from 'react'
+import { api } from './api'
 import './App.css'
 
 function getListId() {
@@ -21,36 +17,62 @@ export default function App() {
   const [todos, setTodos] = useState([])
   const [input, setInput] = useState('')
   const [listId] = useState(getListId)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const loadTodos = useCallback(async () => {
+    try {
+      setLoading(true)
+      const data = await api.getTodos(listId)
+      setTodos(data)
+      setError(null)
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setLoading(false)
+    }
+  }, [listId])
 
   useEffect(() => {
-    const q = query(
-      collection(db, 'lists', listId, 'todos'),
-      orderBy('createdAt')
-    )
-    const unsub = onSnapshot(q, snap => {
-      setTodos(snap.docs.map(d => ({ id: d.id, ...d.data() })))
-    })
-    return unsub
-  }, [listId])
+    loadTodos()
+  }, [loadTodos])
 
   const addTodo = async () => {
     const text = input.trim()
     if (!text) return
-    await addDoc(collection(db, 'lists', listId, 'todos'), {
-      text,
-      done: false,
-      createdAt: Date.now()
-    })
     setInput('')
+    try {
+      const created = await api.addTodo(listId, text)
+      setTodos(prev => [...prev, created])
+    } catch (e) {
+      setError(e.message)
+      setInput(text)
+    }
   }
 
-  const toggleTodo = (id) => {
+  const toggleTodo = async (id) => {
     const todo = todos.find(t => t.id === id)
-    updateDoc(doc(db, 'lists', listId, 'todos', id), { done: !todo.done })
+    const newDone = !todo.done
+    // оптимистично
+    setTodos(prev => prev.map(t => t.id === id ? { ...t, done: newDone } : t))
+    try {
+      await api.updateTodo(listId, id, { done: newDone })
+    } catch (e) {
+      setError(e.message)
+      // откат
+      setTodos(prev => prev.map(t => t.id === id ? { ...t, done: !newDone } : t))
+    }
   }
 
-  const removeTodo = (id) => {
-    deleteDoc(doc(db, 'lists', listId, 'todos', id))
+  const removeTodo = async (id) => {
+    const backup = todos
+    setTodos(prev => prev.filter(t => t.id !== id))
+    try {
+      await api.deleteTodo(listId, id)
+    } catch (e) {
+      setError(e.message)
+      setTodos(backup)
+    }
   }
 
   const copyLink = () => {
@@ -75,37 +97,44 @@ export default function App() {
         </button>
       </div>
 
+      {loading && <p className="counter">Загрузка...</p>}
+
+      {error && (
+        <p className="counter" style={{ color: '#ff5555' }}>
+          Ошибка: {error}
+        </p>
+      )}
+
       <ul className="list">
         {todos.map(todo => (
-  <li key={todo.id} className={todo.done ? 'done' : ''}>
-    <div className="checkbox-wrapper">
-      <input
-        type="checkbox"
-        className="check"
-        id={`todo-${todo.id}`}
-        checked={todo.done}
-        onChange={() => toggleTodo(todo.id)}
-      />
-      <label htmlFor={`todo-${todo.id}`} className="label">
-        <svg width="22" height="22" viewBox="0 0 18 18">
-          <g
-            fill="none"
-            stroke="#2893eb"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path className="path1" d="M2 9.5 L7 14 L16 4" />
-          </g>
-        </svg>
-      </label>
-    </div>
+          <li key={todo.id} className={todo.done ? 'done' : ''}>
+            <div className="checkbox-wrapper">
+              <input
+                type="checkbox"
+                className="check"
+                id={`todo-${todo.id}`}
+                checked={todo.done}
+                onChange={() => toggleTodo(todo.id)}
+              />
+              <label htmlFor={`todo-${todo.id}`} className="label">
+                <svg width="22" height="22" viewBox="0 0 18 18">
+                  <g
+                    fill="none"
+                    stroke="#fff"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path className="path1" d="M2 9.5 L7 14 L16 4" />
+                  </g>
+                </svg>
+              </label>
+            </div>
 
-    <span onClick={() => toggleTodo(todo.id)}>{todo.text}</span>
-    <button onClick={() => removeTodo(todo.id)}>×</button>
-  </li>
-))}
-      
+            <span onClick={() => toggleTodo(todo.id)}>{todo.text}</span>
+            <button onClick={() => removeTodo(todo.id)}>×</button>
+          </li>
+        ))}
       </ul>
 
       {todos.length > 0 && (
