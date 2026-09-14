@@ -3,143 +3,117 @@
 }
 
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #e8e8e8;
-}
-
-.todo {
-  width: 100%;
-  max-width: 600px;
-  padding: 30px;
-  background: #e8e8e8;
-  border: 2px solid #181818;
-  border-radius: 12px;
-  box-shadow: 8px 8px 0 #181818;
+  font-family: system-ui, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 40px 16px;
 }
 
 .app {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  padding: 60px 20px;
-}
-
-.todo {
   width: 100%;
-  max-width: 600px;
+  max-width: 500px;
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 h1 {
-  color: #e8e8e8;
-  text-shadow:
-    2px 2px 0 #181818,
-    4px 4px 0 #181818;
+  margin: 0 0 20px;
+  font-size: 24px;
+  color: #222;
 }
-.form {
+
+.input-row {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
-input {
+.input-row input {
   flex: 1;
-  padding: 12px;
-  border: 1px solid #ccc;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 15px;
+  outline: none;
+  background: #fff;
+  color: #222;
 }
 
-button {
-  border: 0;
-  border-radius: 8px;
+.input-row input:focus {
+  border-color: #4a90e2;
+}
+
+.input-row button {
   padding: 10px 16px;
+  border: none;
+  background: #4a90e2;
+  color: #fff;
+  border-radius: 8px;
   cursor: pointer;
-  background: #18181b;
-  color: white;
+  font-size: 15px;
 }
 
-ul {
+.input-row button:hover {
+  background: #3a7bc8;
+}
+
+.list {
   list-style: none;
   padding: 0;
-  margin-top: 20px;
+  margin: 0;
 }
 
-li {
+.list li {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: white;
-  padding: 14px 16px;
-  margin-bottom: 10px;
-  border-radius: 8px;
+  gap: 10px;
+  padding: 10px 4px;
+  border-bottom: 1px solid #eee;
 }
 
-li span {
-  cursor: pointer;
+.list li span {
   flex: 1;
+  cursor: pointer;
+  color: #222;
 }
 
-li button {
-  background: #ef4444;
-  padding: 5px 10px;
-}
-
-.completed span {
+.list li.done span {
   text-decoration: line-through;
   color: #999;
 }
 
-.empty {
-  color: #777;
-}
-.add-button {
-  --bg: #e8e8e8;
-  --text: #181818;
-
-  padding: 12px 24px;
-  border: 2px solid #181818;
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 16px;
-  font-weight: 700;
+.list li button {
+  border: none;
+  background: transparent;
+  color: #c00;
+  font-size: 20px;
   cursor: pointer;
-
-  box-shadow: 4px 4px 0 #181818;
-  transition: 0.15s ease;
+  line-height: 1;
 }
 
-.add-button:hover {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 #181818;
+.counter {
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: #888;
+  text-align: right;
 }
 
-.add-button:active {
-  transform: translate(4px, 4px);
-  box-shadow: 0 0 0 #181818;
-}
-.todo-input {
+.share-btn {
+  margin-top: 16px;
   width: 100%;
-  flex: 1;
-  padding: 12px 16px;
-
-  background: #e8e8e8;
-  border: 2px solid #181818;
+  padding: 10px;
+  background: #eee;
+  color: #333;
+  border: none;
   border-radius: 8px;
-
-  outline: none;
-  color: #181818;
-  font-size: 16px;
-
-  box-shadow: 4px 4px 0 #181818;
-  transition: 0.2s ease;
+  cursor: pointer;
+  font-size: 14px;
 }
 
-.todo-input::placeholder {
-  color: #777;
-}
-
-.todo-input:focus {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 #181818;
+.share-btn:hover {
+  background: #e0e0e0;
 }
